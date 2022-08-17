@@ -6,7 +6,7 @@ interface LayoutProps {
 
 function Layout({ children }: LayoutProps) {
   return (
-    <Flex direction="column" align="center" justify="center" h="100vh">
+    <Flex direction="column" align="center" justify="center" minH="100vh">
       {children}
     </Flex>
   );
