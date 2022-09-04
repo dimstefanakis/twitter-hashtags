@@ -2,6 +2,7 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import { Flex } from "@chakra-ui/react";
+import People from "../src/features/People";
 import Tweets from "../src/features/Tweets";
 import Header from "../src/flat/Header";
 import styles from "../styles/Home.module.css";
@@ -9,9 +10,11 @@ import axios from "axios";
 
 interface HomeProps {
   tweets: any[];
+  people: any[];
+  meta: any;
 }
 
-const Home = ({ tweets }: HomeProps) => {
+const Home = ({ tweets, meta, people }: HomeProps) => {
   return (
     <div className={styles.container}>
       <Head>
@@ -20,9 +23,12 @@ const Home = ({ tweets }: HomeProps) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Flex w="100%" justifyContent="center" alignItems="center">
-        <Flex flexFlow="column" maxW="500" w="100%">
-          <Header />
-          <Tweets tweets={tweets} />
+        <Flex>
+          <People people={people} />
+          <Flex flexFlow="column" maxW="500" w="100%">
+            <Header />
+            <Tweets tweets={tweets} />
+          </Flex>
         </Flex>
       </Flex>
     </div>
@@ -32,7 +38,7 @@ const Home = ({ tweets }: HomeProps) => {
 // This function gets called at build time
 export async function getStaticProps() {
   let response = await axios.get(
-    "https://api.twitter.com/2/tweets/search/recent?query=%23buildinpublic",
+    "https://api.twitter.com/2/tweets/search/recent?query=%23buildinpublic&expansions=author_id",
     {
       headers: {
         Authorization: `Bearer ${process.env.TWITTER_BEARER_TOKEN}`,
@@ -40,11 +46,27 @@ export async function getStaticProps() {
     }
   );
 
+  let responsePeople = await axios.get(
+    `https://api.twitter.com/2/users?ids=${response.data.data
+      .map((tweet: any) => tweet.author_id)
+      .join()}&user.fields=profile_image_url,username`,
+    {
+      headers: {
+        Authorization: `Bearer ${process.env.TWITTER_BEARER_TOKEN}`,
+      },
+    }
+  );
+
+  console.log(response.data);
+  console.log(responsePeople.data);
+
   // By returning { props: { posts } }, the Blog component
   // will receive `posts` as a prop at build time
   return {
     props: {
       tweets: response.data.data,
+      meta: response.data.meta,
+      people: responsePeople.data.data,
     },
   };
 }

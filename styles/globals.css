@@ -17,6 +17,11 @@ a {
   justify-content: center;
 }
 
+.twitter-tweet{
+  border-radius: 14px;
+  overflow: hidden;
+}
+
 * {
   box-sizing: border-box;
 }
