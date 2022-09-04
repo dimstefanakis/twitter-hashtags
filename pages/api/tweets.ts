@@ -11,7 +11,7 @@ export default async function handler(
   res: NextApiResponse<Data>
 ) {
   let response = await axios.get(
-    "https://api.twitter.com/2/tweets/search/recent?query=%23buildinpublic",
+    `https://api.twitter.com/2/tweets/search/recent?query=%23${process.env.HASHTAG}`,
     {
       headers: {
         Authorization: `Bearer ${process.env.TWITTER_BEARER_TOKEN}`,

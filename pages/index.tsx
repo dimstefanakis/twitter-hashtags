@@ -23,7 +23,7 @@ const Home = ({ tweets, meta, people }: HomeProps) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Flex w="100%" justifyContent="center" alignItems="center">
-        <Flex>
+        <Flex w="100%" justifyContent="center">
           <People people={people} />
           <Flex flexFlow="column" maxW="500" w="100%">
             <Header />
@@ -38,7 +38,7 @@ const Home = ({ tweets, meta, people }: HomeProps) => {
 // This function gets called at build time
 export async function getStaticProps() {
   let response = await axios.get(
-    "https://api.twitter.com/2/tweets/search/recent?query=%23buildinpublic&expansions=author_id",
+    `https://api.twitter.com/2/tweets/search/recent?query=%23${process.env.HASHTAG}&expansions=author_id`,
     {
       headers: {
         Authorization: `Bearer ${process.env.TWITTER_BEARER_TOKEN}`,
