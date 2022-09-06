@@ -2,6 +2,7 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import { Flex } from "@chakra-ui/react";
+import useMediaQuery from "../src/hooks/useMediaQuery";
 import People from "../src/features/People";
 import Tweets from "../src/features/Tweets";
 import Header from "../src/flat/Header";
@@ -15,6 +16,8 @@ interface HomeProps {
 }
 
 const Home = ({ tweets, meta, people }: HomeProps) => {
+  const isMobile = useMediaQuery("(max-width: 768px)");
+
   return (
     <div className={styles.container}>
       <Head>
@@ -24,10 +27,10 @@ const Home = ({ tweets, meta, people }: HomeProps) => {
       </Head>
       <Flex w="100%" justifyContent="center" alignItems="center">
         <Flex w="100%" justifyContent="center">
-          <People people={people} />
+          {!isMobile && <People people={people} />}
           <Flex flexFlow="column" maxW="500" w="100%">
             <Header />
-            <Tweets tweets={tweets} />
+            <Tweets initialTweets={tweets} meta={meta} />
           </Flex>
         </Flex>
       </Flex>
@@ -57,8 +60,11 @@ export async function getStaticProps() {
     }
   );
 
-  console.log(response.data);
-  console.log(responsePeople.data);
+  const uniquePeople = [
+    ...new Map(
+      responsePeople.data.data.map((person: any) => [person.id, person])
+    ).values(),
+  ];
 
   // By returning { props: { posts } }, the Blog component
   // will receive `posts` as a prop at build time
@@ -66,7 +72,7 @@ export async function getStaticProps() {
     props: {
       tweets: response.data.data,
       meta: response.data.meta,
-      people: responsePeople.data.data,
+      people: uniquePeople,
     },
   };
 }
